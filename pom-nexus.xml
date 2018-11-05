@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.aventstack</groupId>
             <artifactId>extentreports</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
