@@ -101,7 +101,7 @@
                 </property>
             </activation>
             <properties>
-                <gpg.keyname>1C85C082</gpg.keyname>    <!-- GPG Key ID to use for signing -->
+                <gpg.keyname>7A7DAF8A</gpg.keyname>    <!-- GPG Key ID to use for signing -->
                 <release.username>anshooarora</release.username> <!-- username for our svn repository -->
             </properties>
             <build>
