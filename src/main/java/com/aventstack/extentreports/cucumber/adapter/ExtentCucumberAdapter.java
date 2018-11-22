@@ -388,7 +388,14 @@ public class ExtentCucumberAdapter
                 stepTestThreadLocal.get().fail(result.getError());
                 break;
             case "skipped":
-                stepTestThreadLocal.get().skip(result.getError());
+            case "pending":
+                if (result.getError() != null) {
+                    stepTestThreadLocal.get().skip(result.getError());
+                }
+                else {
+                    String details = result.getErrorMessage() == null ? "Step skipped" : result.getErrorMessage();
+                    stepTestThreadLocal.get().skip(details);
+                }
                 break;
             case "passed":
                 if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty())
