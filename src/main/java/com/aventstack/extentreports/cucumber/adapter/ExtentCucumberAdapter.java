@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.GherkinKeyword;
 import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.service.ExtentService;
 
@@ -389,17 +390,20 @@ public class ExtentCucumberAdapter
                 break;
             case "skipped":
             case "pending":
+                Boolean currentEndingEventSkipped = stepTestThreadLocal.get().getModel().getLogContext() != null 
+                    && !stepTestThreadLocal.get().getModel().getLogContext().isEmpty()
+                        ? stepTestThreadLocal.get().getModel().getLogContext().getLast().getStatus() == Status.SKIP
+                        : false;
                 if (result.getError() != null) {
                     stepTestThreadLocal.get().skip(result.getError());
-                }
-                else {
+                } else if (!currentEndingEventSkipped) {
                     String details = result.getErrorMessage() == null ? "Step skipped" : result.getErrorMessage();
                     stepTestThreadLocal.get().skip(details);
                 }
                 break;
             case "passed":
                 if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty())
-                    stepTestThreadLocal.get().pass("Step passed");
+                    stepTestThreadLocal.get().pass("");
                 break;
             default:
                 break;
