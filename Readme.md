@@ -20,4 +20,4 @@ public class RunCukesTest {
 
 ### License
 
-extentreports-cucumber4-adapter is MIT licensed.
+MIT licensed
