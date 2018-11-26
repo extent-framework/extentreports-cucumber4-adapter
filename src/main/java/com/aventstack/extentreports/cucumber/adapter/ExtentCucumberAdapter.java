@@ -58,6 +58,8 @@ import gherkin.pickles.PickleTable;
 public class ExtentCucumberAdapter
         implements ConcurrentEventListener {
 
+    private static final String SCREENSHOT_DIR_PROPERTY = "screenshot.dir";
+    
     private static ThreadLocal<ExtentTest> featureTestThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> scenarioOutlineThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> scenarioThreadLocal = new InheritableThreadLocal<>();
@@ -202,7 +204,9 @@ public class ExtentCucumberAdapter
     
     private URL toUrl(String fileName) {
         try {
-            return new URL(new File("test-output/").toURI().toURL(), fileName);
+            Object prop = ExtentService.getProperty(SCREENSHOT_DIR_PROPERTY);
+            String screenshotDir = prop == null ? "test-output/" : String.valueOf(prop); 
+            return new URL(new File(screenshotDir).toURI().toURL(), fileName);
         } catch (IOException e) {
            throw new CucumberException(e);
         }

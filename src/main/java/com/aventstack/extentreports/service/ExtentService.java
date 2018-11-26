@@ -23,9 +23,16 @@ public class ExtentService
     implements Serializable {
 
     private static final long serialVersionUID = -5008231199972325650L;
-
+    
+    private static Properties properties;
+    
     public static synchronized ExtentReports getInstance() {
         return ExtentReportsLoader.INSTANCE;
+    }
+    
+    public static Object getProperty(String key) {
+        String sys = System.getProperty(key);
+        return sys == null ? (properties == null ? null : properties.get(key)) : sys;
     }
 
     @SuppressWarnings("unused")
@@ -99,6 +106,7 @@ public class ExtentService
                 Properties properties = new Properties();
                 try {
                     properties.load(is.get());
+                    ExtentService.properties = properties;
                     
                     if (properties.containsKey(INIT_AVENT_KEY) && "true".equals(String.valueOf(properties.get(INIT_AVENT_KEY))))
                         initAvent(properties);
