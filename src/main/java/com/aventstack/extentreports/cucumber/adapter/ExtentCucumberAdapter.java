@@ -247,9 +247,10 @@ public class ExtentCucumberAdapter
         TestSourcesModel.AstNode astNode = testSources.getAstNode(currentFeatureFile.get(), testCase.getLine());
         if (TestSourcesModel.isScenarioOutlineScenario(astNode)) {
             ScenarioOutline scenarioOutline = (ScenarioOutline)TestSourcesModel.getScenarioDefinition(astNode);
-            if (currentScenarioOutline.get() == null || !currentScenarioOutline.get().equals(scenarioOutline)) {
-                currentScenarioOutline.set(scenarioOutline);
+            if (currentScenarioOutline.get() == null || !currentScenarioOutline.get().getName().equals(scenarioOutline.getName())) {
+                scenarioOutlineThreadLocal.set(null);
                 createScenarioOutline(scenarioOutline);
+                currentScenarioOutline.set(scenarioOutline);
                 addOutlineStepsToReport(scenarioOutline);
             }
             Examples examples = (Examples)astNode.parent.node;
@@ -298,7 +299,10 @@ public class ExtentCucumberAdapter
         rows.add(examples.getTableHeader());
         rows.addAll(examples.getTableBody());
         String[][] data = getTable(rows);
-        String markup = "<div class='mt-2 label blue white-text inline-block'>" + examples.getName() + "</div>" + MarkupHelper.createTable(data).getMarkup();
+        String markup = MarkupHelper.createTable(data).getMarkup();
+        if (examples.getName() != null && !examples.getName().isEmpty()) {
+            markup = "<div class='mt-2 label blue white-text inline-block'>" + examples.getName() + "</div>" + markup;
+        }
         markup = scenarioOutlineThreadLocal.get().getModel().getDescription() + markup;
         scenarioOutlineThreadLocal.get().getModel().setDescription(markup);
     }
