@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -206,7 +207,8 @@ public class ExtentCucumberAdapter
         try {
             Object prop = ExtentService.getProperty(SCREENSHOT_DIR_PROPERTY);
             String screenshotDir = prop == null ? "test-output/" : String.valueOf(prop); 
-            return new URL(new File(screenshotDir).toURI().toURL(), fileName);
+            URL url = Paths.get(screenshotDir, fileName).toUri().toURL();
+            return url;
         } catch (IOException e) {
            throw new CucumberException(e);
         }
