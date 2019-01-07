@@ -214,7 +214,12 @@ public class ExtentCucumberAdapter
         }
     }
 
-    private void handleWrite(WriteEvent event) { }
+    private void handleWrite(WriteEvent event) {
+    	String text = event.text;
+    	if (text != null && !text.isEmpty()) {
+    	    stepTestThreadLocal.get().info(text);
+    	}
+    }
 
     private void finishReport() {
         ExtentService.getInstance().flush();
