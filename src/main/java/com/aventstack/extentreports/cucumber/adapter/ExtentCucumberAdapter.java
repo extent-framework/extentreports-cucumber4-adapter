@@ -66,6 +66,7 @@ public class ExtentCucumberAdapter
     private static ThreadLocal<ExtentTest> featureTestThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> scenarioOutlineThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> scenarioThreadLocal = new InheritableThreadLocal<>();
+    private static ThreadLocal<Boolean> isHookThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> stepTestThreadLocal = new InheritableThreadLocal<>();
     
     @SuppressWarnings("serial")
@@ -158,10 +159,13 @@ public class ExtentCucumberAdapter
     }
 
     private synchronized void handleTestStepStarted(TestStepStarted event) {
+        isHookThreadLocal.set(false);
+        
         if (event.testStep instanceof HookTestStep) {
             ExtentTest t = scenarioThreadLocal.get()
                     .createNode(Asterisk.class, event.testStep.getCodeLocation());
             stepTestThreadLocal.set(t);
+            isHookThreadLocal.set(true);
         }
         
         if (event.testStep instanceof PickleStepTestStep) {
@@ -193,8 +197,12 @@ public class ExtentCucumberAdapter
                 }
                 break;
             case "passed":
-                if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty())
+                if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty()) {
                     stepTestThreadLocal.get().pass("");
+                }
+                if (isHookThreadLocal.get()) {
+                    ExtentService.getInstance().removeTest(stepTestThreadLocal.get());
+                }
                 break;
             default:
                 break;
@@ -347,7 +355,7 @@ public class ExtentCucumberAdapter
         String[][] data = getTable(rows);
         String markup = MarkupHelper.createTable(data).getMarkup();
         if (examples.getName() != null && !examples.getName().isEmpty()) {
-            markup = "<span class='mt-2 label badge blue white-text'>" + examples.getName() + "</span>" + markup;
+            markup = examples.getName() + markup;
         }
         markup = scenarioOutlineThreadLocal.get().getModel().getDescription() + markup;
         scenarioOutlineThreadLocal.get().getModel().setDescription(markup);
@@ -393,7 +401,7 @@ public class ExtentCucumberAdapter
                         ? step.getText().replace("<", "&lt;").replace(">", "&gt;")
                         : stepName;
                 ExtentTest t = scenarioThreadLocal.get()
-                        .createNode(new GherkinKeyword(step.getKeyword().trim()), step.getKeyword() + name);
+                        .createNode(new GherkinKeyword(step.getKeyword().trim()), step.getKeyword() + name, testStep.getCodeLocation());
                 stepTestThreadLocal.set(t);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
