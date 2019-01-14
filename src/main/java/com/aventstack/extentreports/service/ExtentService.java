@@ -17,6 +17,7 @@ import com.aventstack.extentreports.reporter.ExtentEmailReporter;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentLoggerReporter;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.ExtentTabularReporter;
 
 public class ExtentService 
@@ -61,6 +62,7 @@ public class ExtentService
         private static final String HTML = "html";
         private static final String KLOV = "klov";
         private static final String LOGGER = "logger";
+        private static final String SPARK = "spark";
         private static final String TABULAR = "tabular";
         
         private static final String INIT_AVENT_KEY = EXTENT_REPORTER + DELIM + AVENT + DELIM + START;
@@ -70,6 +72,7 @@ public class ExtentService
         private static final String INIT_HTML_KEY = EXTENT_REPORTER + DELIM + HTML + DELIM + START;
         private static final String INIT_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + START;
         private static final String INIT_LOGGER_KEY = EXTENT_REPORTER + DELIM + LOGGER + DELIM + START;
+        private static final String INIT_SPARK_KEY = EXTENT_REPORTER + DELIM + SPARK + DELIM + START;
         private static final String INIT_TABULAR_KEY = EXTENT_REPORTER + DELIM + TABULAR + DELIM + START;
         
         private static final String CONFIG_AVENT_KEY = EXTENT_REPORTER + DELIM + AVENT + DELIM + CONFIG;
@@ -79,6 +82,7 @@ public class ExtentService
         private static final String CONFIG_HTML_KEY = EXTENT_REPORTER + DELIM + HTML + DELIM + CONFIG;
         private static final String CONFIG_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + CONFIG;
         private static final String CONFIG_LOGGER_KEY = EXTENT_REPORTER + DELIM + LOGGER + DELIM + CONFIG;
+        private static final String CONFIG_SPARK_KEY = EXTENT_REPORTER + DELIM + SPARK + DELIM + CONFIG;
         private static final String CONFIG_TABULAR_KEY = EXTENT_REPORTER + DELIM + TABULAR + DELIM + CONFIG;
 
         private static final String OUT_AVENT_KEY = EXTENT_REPORTER + DELIM + AVENT + DELIM + OUT;
@@ -87,6 +91,7 @@ public class ExtentService
         private static final String OUT_EMAIL_KEY = EXTENT_REPORTER + DELIM + EMAIL + DELIM + OUT;
         private static final String OUT_HTML_KEY = EXTENT_REPORTER + DELIM + HTML + DELIM + OUT;
         private static final String OUT_LOGGER_KEY = EXTENT_REPORTER + DELIM + LOGGER + DELIM + OUT;
+        private static final String OUT_SPARK_KEY = EXTENT_REPORTER + DELIM + SPARK + DELIM + OUT;
         private static final String OUT_TABULAR_KEY = EXTENT_REPORTER + DELIM + TABULAR + DELIM + OUT;
         
         static {
@@ -129,6 +134,9 @@ public class ExtentService
                     if (properties.containsKey(INIT_LOGGER_KEY) && "true".equals(String.valueOf(properties.get(INIT_LOGGER_KEY))))
                         initLogger(properties);
 
+                    if (properties.containsKey(INIT_SPARK_KEY) && "true".equals(String.valueOf(properties.get(INIT_SPARK_KEY))))
+                        initSpark(properties);
+                    
                     if (properties.containsKey(INIT_TABULAR_KEY) && "true".equals(String.valueOf(properties.get(INIT_TABULAR_KEY))))
                         initTabular(properties);
                 } catch (Exception e) {
@@ -159,6 +167,9 @@ public class ExtentService
             if ("true".equals(System.getProperty(INIT_LOGGER_KEY)))
                 initLogger(null);
 
+            if ("true".equals(System.getProperty(INIT_SPARK_KEY)))
+                initSpark(null);
+            
             if ("true".equals(System.getProperty(INIT_TABULAR_KEY)))
                 initTabular(null);
         }
@@ -221,6 +232,12 @@ public class ExtentService
             String out = getOutputPath(properties, OUT_LOGGER_KEY);
             ExtentLoggerReporter logger = new ExtentLoggerReporter(out);
             attach(logger, properties, CONFIG_LOGGER_KEY);
+        }
+        
+        private static void initSpark(Properties properties) {
+            String out = getOutputPath(properties, OUT_SPARK_KEY);
+            ExtentSparkReporter spark = new ExtentSparkReporter(out);
+            attach(spark, properties, CONFIG_SPARK_KEY);
         }
         
         private static void initTabular(Properties properties) {
