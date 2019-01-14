@@ -200,7 +200,7 @@ public class ExtentCucumberAdapter
                 if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty()) {
                     stepTestThreadLocal.get().pass("");
                 }
-                if (isHookThreadLocal.get()) {
+                if (isHookThreadLocal.get() && !stepTestThreadLocal.get().getModel().hasLog() && !stepTestThreadLocal.get().getModel().getLogContext().getFirst().hasScreenCapture()) {
                     ExtentService.getInstance().removeTest(stepTestThreadLocal.get());
                 }
                 break;
