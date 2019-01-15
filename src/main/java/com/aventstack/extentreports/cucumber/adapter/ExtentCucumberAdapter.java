@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.aventstack.extentreports.ExtentTest;
@@ -63,7 +64,9 @@ public class ExtentCucumberAdapter
 
     private static final String SCREENSHOT_DIR_PROPERTY = "screenshot.dir";
     
+    private static Map<String, ExtentTest> featureMap = new ConcurrentHashMap<>();
     private static ThreadLocal<ExtentTest> featureTestThreadLocal = new InheritableThreadLocal<>();
+    private static Map<String, ExtentTest> scenarioOutlineMap = new ConcurrentHashMap<>();
     private static ThreadLocal<ExtentTest> scenarioOutlineThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> scenarioThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<Boolean> isHookThreadLocal = new InheritableThreadLocal<>();
@@ -278,12 +281,17 @@ public class ExtentCucumberAdapter
     private synchronized void createFeature(TestCase testCase) {
         Feature feature = testSources.getFeature(testCase.getUri());
         if (feature != null) {
+            if (featureMap.containsKey(feature.getName())) {
+                featureTestThreadLocal.set(featureMap.get(feature.getName()));
+                return;
+            }            
             if (featureTestThreadLocal.get() != null && featureTestThreadLocal.get().getModel().getName().equals(feature.getName())) {
                 return;
             }
             ExtentTest t = ExtentService.getInstance()
                     .createTest(com.aventstack.extentreports.gherkin.model.Feature.class, feature.getName(), feature.getDescription());
             featureTestThreadLocal.set(t);
+            featureMap.put(feature.getName(), t);
             List<String> tagList = createTagsList(feature.getTags());
             tagList.forEach(featureTestThreadLocal.get()::assignCategory);
         }
@@ -320,10 +328,15 @@ public class ExtentCucumberAdapter
     }
 
     private synchronized void createScenarioOutline(ScenarioOutline scenarioOutline) {
+        if (scenarioOutlineMap.containsKey(scenarioOutline.getName())) {
+            scenarioOutlineThreadLocal.set(scenarioOutlineMap.get(scenarioOutline.getName()));
+            return;
+        }
         if (scenarioOutlineThreadLocal.get() == null) {
             ExtentTest t = featureTestThreadLocal.get()
                     .createNode(com.aventstack.extentreports.gherkin.model.ScenarioOutline.class, scenarioOutline.getName(), scenarioOutline.getDescription());
             scenarioOutlineThreadLocal.set(t);
+            scenarioOutlineMap.put(scenarioOutline.getName(), t);
             List<String> tags = createTagsList(scenarioOutline.getTags());
             tags.forEach(scenarioOutlineThreadLocal.get()::assignCategory);
         }
