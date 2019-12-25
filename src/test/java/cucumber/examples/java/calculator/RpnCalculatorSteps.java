@@ -1,17 +1,17 @@
 package cucumber.examples.java.calculator;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.core.api.Scenario;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class RpnCalculatorStepdefs {
+public class RpnCalculatorSteps {
     private RpnCalculator calc;
 
     @Given("a calculator I just turned on")
@@ -26,7 +26,7 @@ public class RpnCalculatorStepdefs {
         calc.push("+");
     }
 
-    @Given("I press (.+)")
+    @Given("^I press (.+)$")
     public void I_press(String what) {
         calc.push(what);
     }
@@ -43,7 +43,7 @@ public class RpnCalculatorStepdefs {
 
     @After
     public void after(Scenario scenario) {
-        // result.write("HELLLLOO");
+        // scenario.write("HELLLLOO");
     }
 
     @Given("the previous entries:")
@@ -56,13 +56,31 @@ public class RpnCalculatorStepdefs {
     }
 
     static final class Entry {
-        private final Integer first;
-        private final Integer second;
-        private final String operation;
+        private Integer first;
+        private Integer second;
+        private String operation;
 
-        Entry(Integer first, Integer second, String operation) {
+        public Integer getFirst() {
+            return first;
+        }
+
+        public void setFirst(Integer first) {
             this.first = first;
+        }
+
+        public Integer getSecond() {
+            return second;
+        }
+
+        public void setSecond(Integer second) {
             this.second = second;
+        }
+
+        public String getOperation() {
+            return operation;
+        }
+
+        public void setOperation(String operation) {
             this.operation = operation;
         }
     }

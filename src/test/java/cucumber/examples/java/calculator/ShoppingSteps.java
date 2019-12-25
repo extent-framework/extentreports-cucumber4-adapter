@@ -1,14 +1,14 @@
 package cucumber.examples.java.calculator;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class ShoppingStepdefs {
+public class ShoppingSteps {
     private RpnCalculator calc = new RpnCalculator();
 
     @Given("the following groceries:")
@@ -31,14 +31,25 @@ public class ShoppingStepdefs {
     }
 
     static class Grocery {
-        @SuppressWarnings("unused")
-		private String name;
+        private String name;
         private Price price;
 
-        Grocery(String name, Price price) {
-            this.name = name;
+        public void setPrice(Price price) {
             this.price = price;
         }
+
+        public Price getPrice() {
+            return price;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
     }
 
     static final class Price {

@@ -1,7 +1,8 @@
 package com.aventstack.extentreports.cucumber.adapter;
 
-import cucumber.util.FixJava;
 import gherkin.deps.com.google.gson.Gson;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,14 +13,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 
 /**
- * A stream that can write to both file and http URLs. If it's a file URL, writes with a {@link
- * java.io.FileOutputStream}, if it's a http or https URL, writes with a HTTP PUT (by default) or with the specified
- * method.
+ * A stream that can write to both file and http URLs. If it's a file URL, writes with a {@link java.io.FileOutputStream},
+ * if it's a http or https URL, writes with a HTTP PUT (by default) or with the specified method.
  */
 class URLOutputStream extends OutputStream {
-
   private final URL url;
   private final String method;
   private final int expectedResponseCode;
@@ -27,11 +30,10 @@ class URLOutputStream extends OutputStream {
   private final HttpURLConnection urlConnection;
 
   URLOutputStream(URL url) throws IOException {
-    this(url, "PUT", Collections.<String, String>emptyMap(), 200);
+    this(url, "PUT", Collections.emptyMap(), 200);
   }
 
-  private URLOutputStream(URL url, String method, Map<String, String> headers, int expectedResponseCode)
-      throws IOException {
+  private URLOutputStream(URL url, String method, Map<String, String> headers, int expectedResponseCode) throws IOException {
     this.url = url;
     this.method = method;
     this.expectedResponseCode = expectedResponseCode;
@@ -85,27 +87,24 @@ class URLOutputStream extends OutputStream {
   @Override
   public void close() throws IOException {
     try {
-      if (urlConnection != null) {
-        int responseCode = urlConnection.getResponseCode();
-        if (responseCode != expectedResponseCode) {
-          try {
-            urlConnection.getInputStream().close();
-            throw new IOException(
-                String.format("Expected response code: %d. Got: %d", expectedResponseCode, responseCode));
-          } catch (IOException expected) {
-            InputStream errorStream = urlConnection.getErrorStream();
-            if (errorStream != null) {
-              String responseBody = FixJava.readReader(new InputStreamReader(errorStream, "UTF-8"));
-              String contentType = urlConnection.getHeaderField("Content-Type");
-              if (contentType == null) {
-                contentType = "text/plain";
-              }
-              throw new URLOutputStream.ResponseException(responseBody, expected,
-                  responseCode, contentType);
-            } else {
-              throw expected;
-            }
-          }
+      if (urlConnection == null) {
+        return;
+      }
+
+      int responseCode = urlConnection.getResponseCode();
+      if (responseCode == expectedResponseCode) {
+        return;
+      }
+
+      try {
+        urlConnection.getInputStream().close();
+        throw new IOException(String.format("Expected response code: %d. Got: %d", expectedResponseCode, responseCode));
+      } catch (IOException expected) {
+        InputStream errorStream = urlConnection.getErrorStream();
+        if (errorStream != null) {
+          throw createResponseException(responseCode, expected, errorStream);
+        } else {
+          throw expected;
         }
       }
     } finally {
@@ -113,9 +112,20 @@ class URLOutputStream extends OutputStream {
     }
   }
 
-  public class ResponseException extends IOException {
+  private ResponseException createResponseException(int responseCode, IOException expected, InputStream errorStream) throws IOException {
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(errorStream, UTF_8))) {
+      String responseBody = br.lines().collect(Collectors.joining(System.lineSeparator()));
+      String contentType = urlConnection.getHeaderField("Content-Type");
+      if (contentType == null) {
+        contentType = "text/plain";
+      }
+      return new ResponseException(responseBody, expected, responseCode, contentType);
+    }
+  }
 
-    private final Gson gson = new Gson();
+  class ResponseException extends IOException {
+	private static final long serialVersionUID = 7564052957642239835L;
+	private final Gson gson = new Gson();
     private final int responseCode;
     private final String contentType;
 
@@ -128,7 +138,8 @@ class URLOutputStream extends OutputStream {
     @Override
     public String getMessage() {
       if (contentType.equals("application/json")) {
-        Map map = gson.fromJson(super.getMessage(), Map.class);
+        @SuppressWarnings("rawtypes")
+		Map map = gson.fromJson(super.getMessage(), Map.class);
         if (map.containsKey("error")) {
           return getMessage0(map.get("error").toString());
         } else {
