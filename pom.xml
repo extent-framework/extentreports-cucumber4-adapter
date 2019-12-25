@@ -36,14 +36,15 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cucumber.version>4.2.6</cucumber.version>
+    <cucumber.version>4.8.0</cucumber.version>
+    <extent.version>4.0.9</extent.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.aventstack</groupId>
       <artifactId>extentreports</artifactId>
-      <version>4.0.9</version>
+      <version>${extent.version}</version>
     </dependency>
     <dependency>
       <groupId>io.cucumber</groupId>
