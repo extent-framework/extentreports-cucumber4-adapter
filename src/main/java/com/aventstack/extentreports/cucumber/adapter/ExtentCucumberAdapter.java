@@ -452,16 +452,18 @@ public class ExtentCucumberAdapter
         docStringMap.put("value", docString.getContent());
         return docStringMap;
     }
-        
+
+    // the below additions are from PR #33
+    // https://github.com/extent-framework/extentreports-cucumber4-adapter/pull/33
     public static synchronized void addTestStepLog(String message) {
-	stepTestThreadLocal.get().info(message);
+        stepTestThreadLocal.get().info(message);
     }
 	
     public static synchronized void addTestStepScreenCaptureFromPath(String imagePath) throws IOException {
-	stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath);
+	    stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath);
     }
 	
     public static synchronized void addTestStepScreenCaptureFromPath(String imagePath, String title) throws IOException {
-	stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath, title);
+	    stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath, title);
     }
 }
