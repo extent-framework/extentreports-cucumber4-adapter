@@ -452,5 +452,16 @@ public class ExtentCucumberAdapter
         docStringMap.put("value", docString.getContent());
         return docStringMap;
     }
-
+        
+    public static synchronized void addTestStepLog(String message) {
+	stepTestThreadLocal.get().info(message);
+    }
+	
+    public static synchronized void addTestStepScreenCaptureFromPath(String imagePath) throws IOException {
+	stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath);
+    }
+	
+    public static synchronized void addTestStepScreenCaptureFromPath(String imagePath, String title) throws IOException {
+	stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath, title);
+    }
 }
