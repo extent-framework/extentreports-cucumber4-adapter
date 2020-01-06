@@ -19,6 +19,8 @@ import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.gherkin.model.Asterisk;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.aventstack.extentreports.model.service.LogService;
+import com.aventstack.extentreports.model.service.TestService;
 import com.aventstack.extentreports.service.ExtentService;
 
 import cucumber.api.HookTestStep;
@@ -189,7 +191,7 @@ public class ExtentCucumberAdapter
                 if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty()) {
                     stepTestThreadLocal.get().pass("");
                 }
-                if (isHookThreadLocal.get() && !stepTestThreadLocal.get().getModel().hasLog() && !stepTestThreadLocal.get().getModel().getLogContext().getFirst().hasScreenCapture()) {
+                if (isHookThreadLocal.get() && !TestService.testHasLog(stepTestThreadLocal.get().getModel()) && !LogService.logHasScreenCapture(stepTestThreadLocal.get().getModel().getLogContext().getFirst())) {
                     ExtentService.getInstance().removeTest(stepTestThreadLocal.get());
                 }
                 break;

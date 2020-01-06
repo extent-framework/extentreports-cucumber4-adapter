@@ -12,15 +12,14 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/extent-framework/extentreports-cucumber4-adapter.git</connection>
-		<developerConnection>scm:git:https://github.com/extent-framework/extentreports-cucumber4-adapter.git
-    </developerConnection>
+		<developerConnection>scm:git:https://github.com/extent-framework/extentreports-cucumber4-adapter.git</developerConnection>
 		<url>https://github.com/extent-framework/extentreports-cucumber4-adapter</url>
 	</scm>
 
 	<licenses>
 		<license>
-			<name>The MIT License</name>
-			<url>https://opensource.org/licenses/MIT</url>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 
@@ -38,7 +37,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cucumber.version>4.7.4</cucumber.version>
-		<extent.version>4.0.9</extent.version>
+		<extent.version>4.1.0</extent.version>
 	</properties>
 
 	<dependencies>
@@ -62,6 +61,12 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
 			<version>3.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.14.3</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

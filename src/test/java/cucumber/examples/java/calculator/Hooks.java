@@ -1,12 +1,11 @@
 package cucumber.examples.java.calculator;
 
-import io.cucumber.core.api.Scenario;
-import io.cucumber.java.After;
-import io.cucumber.java.AfterStep;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+
+import io.cucumber.core.api.Scenario;
+import io.cucumber.java.After;
 
 public class Hooks {
 
