@@ -51,6 +51,7 @@ public class ExtentCucumberAdapter
         implements ConcurrentEventListener {
 
     private static final String SCREENSHOT_DIR_PROPERTY = "screenshot.dir";
+    private static final String SCREENSHOT_REL_PATH_PROPERTY = "screenshot.rel.path";
     
     private static Map<String, ExtentTest> featureMap = new ConcurrentHashMap<>();
     private static ThreadLocal<ExtentTest> featureTestThreadLocal = new InheritableThreadLocal<>();
@@ -59,6 +60,9 @@ public class ExtentCucumberAdapter
     private static ThreadLocal<ExtentTest> scenarioThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<Boolean> isHookThreadLocal = new InheritableThreadLocal<>();
     private static ThreadLocal<ExtentTest> stepTestThreadLocal = new InheritableThreadLocal<>();
+    
+    private String screenshotDir;
+    private String screenshotRelPath;
     
     @SuppressWarnings("serial")
     private static final Map<String, String> MIME_TYPES_EXTENSIONS = new HashMap<String, String>() {
@@ -123,7 +127,13 @@ public class ExtentCucumberAdapter
         }
     };
 
-    public ExtentCucumberAdapter(String arg) { }
+    public ExtentCucumberAdapter(String arg) {
+    	ExtentService.getInstance();
+    	Object prop = ExtentService.getProperty(SCREENSHOT_DIR_PROPERTY);
+        screenshotDir = prop == null ? "test-output/" : String.valueOf(prop);
+        prop = ExtentService.getProperty(SCREENSHOT_REL_PATH_PROPERTY);
+        screenshotRelPath = prop == null || String.valueOf(prop).isEmpty() ? screenshotDir : String.valueOf(prop);
+    }
 
     @Override
     public void setEventPublisher(EventPublisher publisher) {
@@ -210,7 +220,7 @@ public class ExtentCucumberAdapter
                 writeBytesToURL(event.data, url);
                 try {
                     File f = new File(url.toURI());
-                    stepTestThreadLocal.get().info("", MediaEntityBuilder.createScreenCaptureFromPath(f.getAbsolutePath()).build());
+                    stepTestThreadLocal.get().info("", MediaEntityBuilder.createScreenCaptureFromPath(screenshotRelPath + f.getName()).build());
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 }
@@ -239,8 +249,6 @@ public class ExtentCucumberAdapter
     
     private URL toUrl(String fileName) {
         try {
-            Object prop = ExtentService.getProperty(SCREENSHOT_DIR_PROPERTY);
-            String screenshotDir = prop == null ? "test-output/" : String.valueOf(prop); 
             URL url = Paths.get(screenshotDir, fileName).toUri().toURL();
             return url;
         } catch (IOException e) {
