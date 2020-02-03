@@ -163,9 +163,6 @@ public class ExtentCucumberAdapter
         isHookThreadLocal.set(false);
         
         if (event.testStep instanceof HookTestStep) {
-            ExtentTest t = scenarioThreadLocal.get()
-                    .createNode(Asterisk.class, event.testStep.getCodeLocation());
-            stepTestThreadLocal.set(t);
             isHookThreadLocal.set(true);
         }
         
