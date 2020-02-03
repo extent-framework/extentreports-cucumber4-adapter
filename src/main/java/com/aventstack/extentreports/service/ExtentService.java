@@ -215,7 +215,7 @@ public class ExtentService
         }
         
         private static void initKlov(Properties properties) {
-            ExtentKlovReporter klov = new ExtentKlovReporter();
+            ExtentKlovReporter klov = new ExtentKlovReporter("Default");
             String configPath = properties == null 
                     ? System.getProperty(CONFIG_KLOV_KEY)
                     : String.valueOf(properties.get(CONFIG_KLOV_KEY));
