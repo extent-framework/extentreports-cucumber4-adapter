@@ -133,6 +133,7 @@ public class ExtentCucumberAdapter
         screenshotDir = prop == null ? "test-output/" : String.valueOf(prop);
         prop = ExtentService.getProperty(SCREENSHOT_REL_PATH_PROPERTY);
         screenshotRelPath = prop == null || String.valueOf(prop).isEmpty() ? screenshotDir : String.valueOf(prop);
+        screenshotRelPath = screenshotRelPath == null ? "" : screenshotRelPath;
     }
 
     @Override
@@ -217,6 +218,11 @@ public class ExtentCucumberAdapter
                 writeBytesToURL(event.data, url);
                 try {
                     File f = new File(url.toURI());
+                    if (stepTestThreadLocal.get() == null) {
+                    	ExtentTest t = scenarioThreadLocal.get()
+                                .createNode(Asterisk.class, "Embed");
+                        stepTestThreadLocal.set(t);
+                    }
                     stepTestThreadLocal.get().info("", MediaEntityBuilder.createScreenCaptureFromPath(screenshotRelPath + f.getName()).build());
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
