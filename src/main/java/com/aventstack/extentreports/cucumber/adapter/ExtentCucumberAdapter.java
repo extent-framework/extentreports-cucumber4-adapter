@@ -466,4 +466,8 @@ public class ExtentCucumberAdapter
     public static synchronized void addTestStepScreenCaptureFromPath(String imagePath, String title) throws IOException {
 	    stepTestThreadLocal.get().addScreenCaptureFromPath(imagePath, title);
     }
+    
+    public static ExtentTest getCurrentStep() {
+    	return stepTestThreadLocal.get();
+    }
 }
