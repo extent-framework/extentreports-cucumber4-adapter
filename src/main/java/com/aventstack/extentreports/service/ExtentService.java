@@ -16,7 +16,6 @@ import com.aventstack.extentreports.reporter.ExtentEmailReporter;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentLoggerReporter;
-import com.aventstack.extentreports.reporter.ExtentReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.ExtentTabularReporter;
 
@@ -252,7 +251,7 @@ public class ExtentService
                     : properties.get(configKey);
             if (configPath != null && !String.valueOf(configPath).isEmpty())
                 r.loadXMLConfig(String.valueOf(configPath));
-            INSTANCE.attachReporter(((ExtentReporter) r));
+            INSTANCE.attachReporter(r);
         }
     }
     
