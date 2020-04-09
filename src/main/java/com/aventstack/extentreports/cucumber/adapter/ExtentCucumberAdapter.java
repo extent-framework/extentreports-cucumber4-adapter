@@ -164,6 +164,9 @@ public class ExtentCucumberAdapter
         isHookThreadLocal.set(false);
         
         if (event.testStep instanceof HookTestStep) {
+        	ExtentTest t = scenarioThreadLocal.get()	
+                    .createNode(Asterisk.class, event.testStep.getCodeLocation());	
+            stepTestThreadLocal.set(t);
             isHookThreadLocal.set(true);
         }
         
@@ -197,11 +200,12 @@ public class ExtentCucumberAdapter
                 break;
             case "passed":
                 if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty()) {
-                    stepTestThreadLocal.get().pass("");
+                	if (!isHookThreadLocal.get())
+                		stepTestThreadLocal.get().pass("");
                 }
                 if (stepTestThreadLocal.get() != null) {
 	                Boolean hasLog = TestService.testHasLog(stepTestThreadLocal.get().getModel());
-	                Boolean hasScreenCapture = LogService.logHasScreenCapture(stepTestThreadLocal.get().getModel().getLogContext().getFirst());
+	                Boolean hasScreenCapture = hasLog && LogService.logHasScreenCapture(stepTestThreadLocal.get().getModel().getLogContext().getFirst());
 	                if (isHookThreadLocal.get() && !hasLog && !hasScreenCapture) {
 	                    ExtentService.getInstance().removeTest(stepTestThreadLocal.get());
 	                }
