@@ -13,7 +13,6 @@ import com.aventstack.extentreports.reporter.ExtentAventReporter;
 import com.aventstack.extentreports.reporter.ExtentBDDReporter;
 import com.aventstack.extentreports.reporter.ExtentCardsReporter;
 import com.aventstack.extentreports.reporter.ExtentEmailReporter;
-import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentLoggerReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
@@ -207,9 +206,10 @@ public class ExtentService
             attach(email, properties, CONFIG_EMAIL_KEY);
         }
         
-        private static void initHtml(Properties properties) {
+        @SuppressWarnings("deprecation")
+		private static void initHtml(Properties properties) {
             String out = getOutputPath(properties, OUT_HTML_KEY);
-            ExtentHtmlReporter html = new ExtentHtmlReporter(out);
+            com.aventstack.extentreports.reporter.ExtentHtmlReporter html = new com.aventstack.extentreports.reporter.ExtentHtmlReporter(out);
             attach(html, properties, CONFIG_HTML_KEY);
         }
         

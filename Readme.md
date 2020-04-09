@@ -18,6 +18,22 @@ public class RunCukesTest {
 }
 ```
 
+### Attaching Screenshots
+
+Screenshots can be saved to a specified in `extent.properties` using:
+
+```
+screenshot.dir=test-output/
+```
+
+Starting `1.0.11`, the below setting can be used to specify the relative path from the saved HTML file to link screenshots:
+
+```
+screenshot.rel.path=../
+```
+
+To learn more about this, refer to [#20](https://github.com/extent-framework/extentreports-cucumber4-adapter/issues/20#issuecomment-601591963).
+
 ### License
 
 MIT licensed
