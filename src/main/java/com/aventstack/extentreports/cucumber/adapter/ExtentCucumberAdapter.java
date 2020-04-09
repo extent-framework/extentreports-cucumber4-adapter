@@ -199,9 +199,8 @@ public class ExtentCucumberAdapter
                 }
                 break;
             case "passed":
-                if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty()) {
-                	if (!isHookThreadLocal.get())
-                		stepTestThreadLocal.get().pass("");
+                if (stepTestThreadLocal.get()!= null && stepTestThreadLocal.get().getModel().getLogContext().isEmpty() && !isHookThreadLocal.get()) {
+            		stepTestThreadLocal.get().pass("");
                 }
                 if (stepTestThreadLocal.get() != null) {
 	                Boolean hasLog = TestService.testHasLog(stepTestThreadLocal.get().getModel());
