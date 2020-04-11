@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.GherkinKeyword;
@@ -343,8 +344,16 @@ public class ExtentCucumberAdapter
                     .createNode(com.aventstack.extentreports.gherkin.model.ScenarioOutline.class, scenarioOutline.getName(), scenarioOutline.getDescription());
             scenarioOutlineThreadLocal.set(t);
             scenarioOutlineMap.put(scenarioOutline.getName(), t);
-            List<String> tags = createTagsList(scenarioOutline.getTags());
-            tags.forEach(scenarioOutlineThreadLocal.get()::assignCategory);
+            List<String> featureTags = scenarioOutlineThreadLocal.get().getModel()
+            		.getParent().getCategoryContext().getAll()
+            		.stream()
+            		.map(x -> x.getName())
+            		.collect(Collectors.toList());
+            scenarioOutline.getTags()
+            	.stream()
+            	.map(x -> x.getName())
+            	.filter(x -> !featureTags.contains(x))
+            	.forEach(scenarioOutlineThreadLocal.get()::assignCategory);
         }
     }
 
@@ -406,7 +415,10 @@ public class ExtentCucumberAdapter
             scenarioThreadLocal.set(t);
         }
         if (!testCase.getTags().isEmpty()) {
-            testCase.getTags().forEach(x -> scenarioThreadLocal.get().assignCategory(x.getName()));
+            testCase.getTags()
+	    		.stream()
+	    		.map(PickleTag::getName)
+	    		.forEach(scenarioThreadLocal.get()::assignCategory);
         }
     }
 
