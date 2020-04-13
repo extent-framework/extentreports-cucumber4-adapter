@@ -37,7 +37,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cucumber.version>4.7.4</cucumber.version>
-		<extent.version>4.1.4</extent.version>
+		<extent.version>4.1.5-SNAPSHOT</extent.version>
 	</properties>
 
 	<dependencies>

@@ -1,8 +1,11 @@
 package com.aventstack.extentreports.service;
 
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
@@ -218,13 +221,20 @@ public class ExtentService
             String configPath = properties == null 
                     ? System.getProperty(CONFIG_KLOV_KEY)
                     : String.valueOf(properties.get(CONFIG_KLOV_KEY));
-            if (configPath != null && !configPath.isEmpty())
+            File f = new File(configPath);
+            if (configPath != null && !configPath.isEmpty() && f.exists()) {
+            	Object prop = ExtentService.getProperty("screenshot.dir");
+            	String screenshotDir = prop == null ? "test-output/" : String.valueOf(prop);
+				String url = Paths.get(screenshotDir).toString();
+				ExtentService.getInstance().tryResolveMediaPath(new String[] { url });
                 try {
-                    klov.loadInitializationParams(configPath);
+                	InputStream is = new FileInputStream(f);
+                	klov.loadInitializationParams(is);
                     INSTANCE.attachReporter(klov);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
         }
         
         private static void initLogger(Properties properties) {
