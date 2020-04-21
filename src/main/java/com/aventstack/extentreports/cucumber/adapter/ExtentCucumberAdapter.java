@@ -28,7 +28,17 @@ import cucumber.api.HookTestStep;
 import cucumber.api.PickleStepTestStep;
 import cucumber.api.Result;
 import cucumber.api.TestCase;
-import cucumber.api.event.*;
+import cucumber.api.event.ConcurrentEventListener;
+import cucumber.api.event.EmbedEvent;
+import cucumber.api.event.EventHandler;
+import cucumber.api.event.EventPublisher;
+import cucumber.api.event.TestCaseStarted;
+import cucumber.api.event.TestRunFinished;
+import cucumber.api.event.TestSourceRead;
+import cucumber.api.event.TestStepFinished;
+import cucumber.api.event.TestStepStarted;
+import cucumber.api.event.WriteEvent;
+import cucumber.api.formatter.StrictAware;
 import cucumber.runtime.CucumberException;
 import gherkin.ast.DataTable;
 import gherkin.ast.DocString;
@@ -41,15 +51,19 @@ import gherkin.ast.Step;
 import gherkin.ast.TableCell;
 import gherkin.ast.TableRow;
 import gherkin.ast.Tag;
-import gherkin.pickles.*;
+import gherkin.pickles.Argument;
+import gherkin.pickles.PickleCell;
+import gherkin.pickles.PickleRow;
+import gherkin.pickles.PickleString;
+import gherkin.pickles.PickleTable;
+import gherkin.pickles.PickleTag;
 
 /**
  * A port of Cucumber-JVM (MIT licensed) HtmlFormatter for Extent Framework 
  * Original source: https://github.com/cucumber/cucumber-jvm/blob/master/core/src/main/java/cucumber/runtime/formatter/HTMLFormatter.java
  *
  */
-public class ExtentCucumberAdapter
-        implements ConcurrentEventListener {
+public class ExtentCucumberAdapter implements ConcurrentEventListener, StrictAware {
 
     private static final String SCREENSHOT_DIR_PROPERTY = "screenshot.dir";
     private static final String SCREENSHOT_REL_PATH_PROPERTY = "screenshot.rel.path";
@@ -64,6 +78,7 @@ public class ExtentCucumberAdapter
     
     private String screenshotDir;
     private String screenshotRelPath;
+    private boolean strict = false;
     
     @SuppressWarnings("serial")
     private static final Map<String, String> MIME_TYPES_EXTENSIONS = new HashMap<String, String>() {
@@ -129,6 +144,7 @@ public class ExtentCucumberAdapter
     };
 
     public ExtentCucumberAdapter(String arg) {
+    	System.out.println(arg);
     	ExtentService.getInstance();
     	Object prop = ExtentService.getProperty(SCREENSHOT_DIR_PROPERTY);
         screenshotDir = prop == null ? "test-output/" : String.valueOf(prop);
@@ -146,6 +162,11 @@ public class ExtentCucumberAdapter
         publisher.registerHandlerFor(EmbedEvent.class, embedEventhandler);
         publisher.registerHandlerFor(WriteEvent.class, writeEventhandler);
         publisher.registerHandlerFor(TestRunFinished.class, runFinishedHandler);
+    }
+    
+    @Override
+    public void setStrict(boolean strict) {
+        this.strict = strict;
     }
 
     private void handleTestSourceRead(TestSourceRead event) {
@@ -186,8 +207,19 @@ public class ExtentCucumberAdapter
             case "failed":
                 stepTestThreadLocal.get().fail(result.getError());
                 break;
-            case "skipped":
+            case "undefined":
+            	if (strict) {
+            		stepTestThreadLocal.get().fail("Step undefined");
+            		break;
+            	}
+            	stepTestThreadLocal.get().skip("Step undefined");
+            	break;
             case "pending":
+            case "skipped":
+            	if (isHookThreadLocal.get()) {
+            		ExtentService.getInstance().removeTest(stepTestThreadLocal.get());
+            		break;
+            	}
                 Boolean currentEndingEventSkipped = stepTestThreadLocal.get().getModel().getLogContext() != null 
                     && !stepTestThreadLocal.get().getModel().getLogContext().isEmpty()
                         ? stepTestThreadLocal.get().getModel().getLogContext().getLast().getStatus() == Status.SKIP
