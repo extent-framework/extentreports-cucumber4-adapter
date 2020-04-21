@@ -144,7 +144,6 @@ public class ExtentCucumberAdapter implements ConcurrentEventListener, StrictAwa
     };
 
     public ExtentCucumberAdapter(String arg) {
-    	System.out.println(arg);
     	ExtentService.getInstance();
     	Object prop = ExtentService.getProperty(SCREENSHOT_DIR_PROPERTY);
         screenshotDir = prop == null ? "test-output/" : String.valueOf(prop);
