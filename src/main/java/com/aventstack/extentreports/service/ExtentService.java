@@ -1,13 +1,18 @@
 package com.aventstack.extentreports.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.observer.ExtentObserver;
+import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.JsonFormatter;
 import com.aventstack.extentreports.reporter.ReporterConfigurable;
@@ -58,6 +63,11 @@ public class ExtentService
         private static final String CONFIG_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + CONFIG;
         private static final String OUT_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + OUT;
 
+        private static final String KLOV = "klov";
+        private static final String INIT_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + START;
+        private static final String CONFIG_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + CONFIG;
+        private static final String OUT_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + OUT;
+
         static {
             createViaProperties();
             createViaSystem();
@@ -78,9 +88,14 @@ public class ExtentService
                     if (properties.containsKey(INIT_SPARK_KEY)
                             && "true".equals(String.valueOf(properties.get(INIT_SPARK_KEY))))
                         initSpark(properties);
+
                     if (properties.containsKey(INIT_JSONF_KEY)
                             && "true".equals(String.valueOf(properties.get(INIT_JSONF_KEY))))
                         initJsonf(properties);
+
+                    if (properties.containsKey(INIT_KLOV_KEY)
+                            && "true".equals(String.valueOf(properties.get(INIT_KLOV_KEY))))
+                        initKlov(properties);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -92,6 +107,8 @@ public class ExtentService
                 initSpark(null);
             if ("true".equals(System.getProperty(INIT_JSONF_KEY)))
                 initJsonf(null);
+            if ("true".equals(System.getProperty(INIT_KLOV_KEY)))
+                initKlov(null);
         }
 
         private static String getOutputPath(Properties properties, String key) {
@@ -114,6 +131,27 @@ public class ExtentService
             String out = getOutputPath(properties, OUT_JSONF_KEY);
             JsonFormatter jsonf = new JsonFormatter(out);
             attach(jsonf, properties, CONFIG_JSONF_KEY);
+        }
+
+        private static void initKlov(Properties properties) {
+            ExtentKlovReporter klov = new ExtentKlovReporter("Default");
+            String configPath = properties == null
+                    ? System.getProperty(CONFIG_KLOV_KEY)
+                    : String.valueOf(properties.get(CONFIG_KLOV_KEY));
+            File f = new File(configPath);
+            if (configPath != null && !configPath.isEmpty() && f.exists()) {
+                Object prop = ExtentService.getProperty("screenshot.dir");
+                String screenshotDir = prop == null ? "test-output/" : String.valueOf(prop);
+                String url = Paths.get(screenshotDir).toString();
+                ExtentService.getInstance().tryResolveMediaPath(new String[]{url});
+                try {
+                    InputStream is = new FileInputStream(f);
+                    klov.loadInitializationParams(is);
+                    INSTANCE.attachReporter(klov);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         private static void attach(ReporterConfigurable r, Properties properties, String configKey) {

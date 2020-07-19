@@ -47,6 +47,11 @@
 			<version>${extent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.aventstack</groupId>
+			<artifactId>klovreporter</artifactId>
+			<version>${extent.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-java</artifactId>
 			<version>${cucumber.version}</version>
