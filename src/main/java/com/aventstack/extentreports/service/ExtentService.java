@@ -9,6 +9,7 @@ import java.util.Properties;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.observer.ExtentObserver;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.JsonFormatter;
 import com.aventstack.extentreports.reporter.ReporterConfigurable;
 
 public class ExtentService
@@ -52,6 +53,11 @@ public class ExtentService
         private static final String CONFIG_SPARK_KEY = EXTENT_REPORTER + DELIM + SPARK + DELIM + CONFIG;
         private static final String OUT_SPARK_KEY = EXTENT_REPORTER + DELIM + SPARK + DELIM + OUT;
 
+        private static final String JSONF = "json";
+        private static final String INIT_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + START;
+        private static final String CONFIG_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + CONFIG;
+        private static final String OUT_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + OUT;
+
         static {
             createViaProperties();
             createViaSystem();
@@ -72,6 +78,9 @@ public class ExtentService
                     if (properties.containsKey(INIT_SPARK_KEY)
                             && "true".equals(String.valueOf(properties.get(INIT_SPARK_KEY))))
                         initSpark(properties);
+                    if (properties.containsKey(INIT_JSONF_KEY)
+                            && "true".equals(String.valueOf(properties.get(INIT_JSONF_KEY))))
+                        initJsonf(properties);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -81,6 +90,8 @@ public class ExtentService
         private static void createViaSystem() {
             if ("true".equals(System.getProperty(INIT_SPARK_KEY)))
                 initSpark(null);
+            if ("true".equals(System.getProperty(INIT_JSONF_KEY)))
+                initJsonf(null);
         }
 
         private static String getOutputPath(Properties properties, String key) {
@@ -97,6 +108,12 @@ public class ExtentService
             String out = getOutputPath(properties, OUT_SPARK_KEY);
             ExtentSparkReporter spark = new ExtentSparkReporter(out);
             attach(spark, properties, CONFIG_SPARK_KEY);
+        }
+
+        private static void initJsonf(Properties properties) {
+            String out = getOutputPath(properties, OUT_JSONF_KEY);
+            JsonFormatter jsonf = new JsonFormatter(out);
+            attach(jsonf, properties, CONFIG_JSONF_KEY);
         }
 
         private static void attach(ReporterConfigurable r, Properties properties, String configKey) {
