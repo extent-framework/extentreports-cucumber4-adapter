@@ -60,13 +60,11 @@ public class ExtentService
 
         private static final String JSONF = "json";
         private static final String INIT_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + START;
-        private static final String CONFIG_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + CONFIG;
         private static final String OUT_JSONF_KEY = EXTENT_REPORTER + DELIM + JSONF + DELIM + OUT;
 
         private static final String KLOV = "klov";
         private static final String INIT_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + START;
         private static final String CONFIG_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + CONFIG;
-        private static final String OUT_KLOV_KEY = EXTENT_REPORTER + DELIM + KLOV + DELIM + OUT;
 
         static {
             createViaProperties();
@@ -130,7 +128,7 @@ public class ExtentService
         private static void initJsonf(Properties properties) {
             String out = getOutputPath(properties, OUT_JSONF_KEY);
             JsonFormatter jsonf = new JsonFormatter(out);
-            attach(jsonf, properties, CONFIG_JSONF_KEY);
+            INSTANCE.attachReporter(jsonf);
         }
 
         private static void initKlov(Properties properties) {
