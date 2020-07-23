@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.aventstack</groupId>
 	<artifactId>extentreports-cucumber4-adapter</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<name>extentreports-cucumber4-adapter</name>
 	<url>http://extentreports.com</url>
 	<description>Cucumber-JVM 4 adapter for Extent Framework</description>
@@ -36,13 +37,18 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cucumber.version>4.7.4</cucumber.version>
-		<extent.version>4.1.5</extent.version>
+		<extent.version>5.0.0</extent.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.aventstack</groupId>
 			<artifactId>extentreports</artifactId>
+			<version>${extent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.aventstack</groupId>
+			<artifactId>klov-reporter</artifactId>
 			<version>${extent.version}</version>
 		</dependency>
 		<dependency>
@@ -170,5 +176,4 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 	</distributionManagement>
-
 </project>
