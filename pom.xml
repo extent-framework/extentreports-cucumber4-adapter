@@ -5,7 +5,7 @@
 
 	<groupId>com.aventstack</groupId>
 	<artifactId>extentreports-cucumber4-adapter</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<name>extentreports-cucumber4-adapter</name>
 	<url>http://extentreports.com</url>
 	<description>Cucumber-JVM 4 adapter for Extent Framework</description>
@@ -37,13 +37,18 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cucumber.version>4.7.4</cucumber.version>
-		<extent.version>4.1.5</extent.version>
+		<extent.version>5.0.0</extent.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.aventstack</groupId>
 			<artifactId>extentreports</artifactId>
+			<version>${extent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.aventstack</groupId>
+			<artifactId>klov-reporter</artifactId>
 			<version>${extent.version}</version>
 		</dependency>
 		<dependency>
@@ -83,6 +88,59 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<build>
+				<resources>
+				</resources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<configuration>
+									<sources>
+										<source>src/</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -93,5 +151,4 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 	</distributionManagement>
-
 </project>
