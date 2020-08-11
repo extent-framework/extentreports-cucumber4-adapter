@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -29,16 +30,16 @@ class URLOutputStream extends OutputStream {
   private final OutputStream out;
   private final HttpURLConnection urlConnection;
 
-  URLOutputStream(URL url) throws IOException {
+  URLOutputStream(URL url) throws IOException, URISyntaxException {
     this(url, "PUT", Collections.emptyMap(), 200);
   }
 
-  private URLOutputStream(URL url, String method, Map<String, String> headers, int expectedResponseCode) throws IOException {
+  private URLOutputStream(URL url, String method, Map<String, String> headers, int expectedResponseCode) throws IOException, URISyntaxException {
     this.url = url;
     this.method = method;
     this.expectedResponseCode = expectedResponseCode;
     if (url.getProtocol().equals("file")) {
-      File file = new File(url.getFile());
+      File file = new File(url.toURI().getPath());
       ensureParentDirExists(file);
       out = new FileOutputStream(file);
       urlConnection = null;
